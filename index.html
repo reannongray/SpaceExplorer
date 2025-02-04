@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore the universe with Space Explorer - Your gateway to cosmic discovery">
+    <meta name="keywords" content="space, planets, universe, cosmic, astronomy, NASA, space events">
+    <meta name="author" content="Space Explorer Team">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="src/styles/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Space Explorer | Journey Through Space</title>
+</head>
+<body class="particles-loaded">
+    <nav class="glass-nav">
+        <div class="nav-logo">
+            <i class="fas fa-rocket" aria-hidden="true"></i>
+            <span>Space Explorer</span>
+        </div>
+        <div class="nav-links">
+            <a href="#home" class="active"><i class="fas fa-home"></i> Home</a>
+            <a href="#events" class="nav-link"><i class="fas fa-calendar-alt"></i> Events</a>
+            <a href="exploration.html" class="nav-link"><i class="fas fa-space-shuttle"></i> Exploration</a>
+            <a href="#missions" class="nav-link"><i class="fas fa-satellite"></i> Missions</a>
+        </div>
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1 class="glow-text">Space Explorer</h1>
+                <p class="hero-subtitle">Discover the Wonders of Our Universe</p>
+                <div class="hero-buttons">
+                    <a href="exploration.html" class="cosmic-btn primary">Explore Now</a>
+                    <button class="cosmic-btn secondary">Latest Discovery</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="events" class="glass-panel">
+            <h2>Space Events</h2>
+            <div class="event-categories">
+                <button class="cosmic-btn active" data-filter="all">All Events</button>
+                <button class="cosmic-btn" data-filter="meteor">Meteor Showers</button>
+                <button class="cosmic-btn" data-filter="eclipse">Eclipses</button>
+                <button class="cosmic-btn" data-filter="astronomical">Astronomical</button>
+            </div>
+            <div id="events-grid" class="events-grid"></div>
+        </section>
+
+        <section id="missions" class="glass-panel">
+            <h2>Space Missions</h2>
+            <div class="missions-timeline">
+                <div class="timeline-controls">
+                    <button class="cosmic-btn" data-time="past">Past</button>
+                    <button class="cosmic-btn active" data-time="present">Current</button>
+                    <button class="cosmic-btn" data-time="future">Upcoming</button>
+                </div>
+                <div id="mission-content" class="timeline-content"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="glass-panel">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Space Explorer</h3>
+                <p>Exploring the cosmos, one discovery at a time.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="#events">Space Events</a></li>
+                    <li><a href="exploration.html">Exploration</a></li>
+                    <li><a href="#missions">Missions</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Space Explorer. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/scripts/app.js"></script>
+</body>
+</html>
