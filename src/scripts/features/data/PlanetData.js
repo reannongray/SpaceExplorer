@@ -1,8 +1,8 @@
-import NasaService from '../services/NasaService.js';
+import { NasaService } from '../../services/NasaService.js';
 
 class PlanetData {
     constructor() {
-        this.nasaService = new NasaService();
+        this.dynamicData = new Map();
         this.staticData = {
             sun: {
                 name: 'Sun',
@@ -147,7 +147,6 @@ class PlanetData {
                 interesting_fact: `Though reclassified as a dwarf planet in 2006, Pluto continues to surprise scientists with its complexity. The New Horizons mission revealed mountains of water ice that could rival the Rocky Mountains, a heart-shaped plain of frozen nitrogen (Tombaugh Regio), and possible underground oceans. Pluto and its largest moon Charon are so close in size that they orbit each other, creating a binary system. The surface features blue skies, red snow, and five moons, despite its tiny size and extreme distance from the Sun. Its thin atmosphere periodically freezes and falls to the surface as temperatures drop during its elongated orbit.`
             }
         };
-        this.dynamicData = new Map();
     }
 
     async initialize() {
@@ -161,13 +160,16 @@ class PlanetData {
     }
 
     async prefetchNasaData() {
-        this.fetchNasaData('earth');
+        // Start with Earth data
+        await this.fetchNasaData('earth');
     }
 
     async fetchNasaData(planetName) {
         try {
-            const nasaData = await this.nasaService.getPlanetaryData(planetName);
-            this.dynamicData.set(planetName, nasaData);
+            const nasaData = await NasaService.getPlanetaryData(planetName);
+            if (nasaData) {
+                this.dynamicData.set(planetName.toLowerCase(), nasaData);
+            }
         } catch (error) {
             console.error(`Failed to fetch NASA data for ${planetName}:`, error);
         }
@@ -177,6 +179,11 @@ class PlanetData {
         const baseData = this.staticData[planetName.toLowerCase()];
         const nasaData = this.dynamicData.get(planetName.toLowerCase());
         
+        if (!baseData) {
+            console.warn(`No data found for planet: ${planetName}`);
+            return null;
+        }
+        
         if (nasaData) {
             return {
                 ...baseData,
@@ -184,8 +191,16 @@ class PlanetData {
             };
         }
         
+        // Trigger a fetch for next time if don't have NASA data
         this.fetchNasaData(planetName);
         return baseData;
+    }
+
+    getAllPlanets() {
+        return Object.keys(this.staticData).map(planetName => ({
+            name: planetName,
+            ...this.getPlanetData(planetName)
+        }));
     }
 }
 

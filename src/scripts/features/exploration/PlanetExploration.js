@@ -16,7 +16,7 @@ class PlanetExplorer {
             0.1,
             1000
         );
-        this.camera.position.set(0, 50, 150); // Moved back for better view
+        this.camera.position.set(0, 30, 200);
 
         this.renderer = new this.THREE.WebGLRenderer({
             canvas: document.getElementById('universe'),
@@ -29,6 +29,12 @@ class PlanetExplorer {
         this.planets = {};
         this.isAutoRotating = true;
         this.planetData = new PlanetData();
+        this.isDragging = false;
+        this.previousMousePosition = { x: 0, y: 0 };
+        
+        // Add raycaster for planet clicking
+        this.raycaster = new this.THREE.Raycaster();
+        this.mouse = new this.THREE.Vector2();
         
         this.textureUrls = {
             sun: 'https://i.imgur.com/XdRTvzj.jpeg',
@@ -54,7 +60,9 @@ class PlanetExplorer {
         this.addLights();
         await this.createPlanets();
         this.setupControls();
+        this.setupPlanetClickInteraction();
         this.addEventListeners();
+        this.setupInteraction();
         this.animate();
         // Set initial planet to Earth
         this.loadPlanetData('earth');
@@ -74,7 +82,7 @@ class PlanetExplorer {
         this.scene.add(dirLight);
 
         const sunLight = new this.THREE.PointLight(0xffffff, 3);
-        sunLight.position.set(-100, 0, -50); // Adjusted for new spacing
+        sunLight.position.set(-100, 0, -50);
         this.scene.add(sunLight);
     }
 
@@ -99,20 +107,18 @@ class PlanetExplorer {
             });
         };
 
-        // Updated spacing for planets
         const planetData = {
-            sun: { size: 12, position: [-100, 0, -50], emissive: true },
-            mercury: { size: 3, position: [-75, 0, -35] },
-            venus: { size: 4, position: [-50, 0, -25] },
-            earth: { size: 5, position: [-25, 0, -12] },
-            mars: { size: 4, position: [0, 0, 0] },
-            jupiter: { size: 8, position: [25, 0, 12] },
-            saturn: { size: 7, position: [60, 0, 30] }, // Moved further out for rings
-            uranus: { size: 6, position: [95, 0, 45] },
-            neptune: { size: 6, position: [130, 0, 60] },
-            pluto: { size: 2.5, position: [165, 0, 75] }
+            sun: { size: 9.6, position: [-80, 0, -8] },
+            mercury: { size: 2.4, position: [-60, 0, -6] },
+            venus: { size: 3.2, position: [-40, 0, -4] },
+            earth: { size: 4, position: [-20, 0, -2] },
+            mars: { size: 3.2, position: [0, 0, 0] },
+            jupiter: { size: 6.4, position: [20, 0, 2] },
+            saturn: { size: 5.6, position: [40, 0, 4] },
+            uranus: { size: 4.8, position: [60, 0, 6] },
+            neptune: { size: 4.8, position: [80, 0, 8] },
+            pluto: { size: 2, position: [100, 0, 10] }
         };
-
         for (const [name, data] of Object.entries(planetData)) {
             try {
                 const texture = await loadTexture(this.textureUrls[name]);
@@ -120,10 +126,11 @@ class PlanetExplorer {
                 let material;
 
                 if (data.emissive) {
-                    material = new this.THREE.MeshBasicMaterial({
+                    material = new this.THREE.MeshStandardMaterial({
                         map: texture,
                         emissive: 0xffff00,
-                        emissiveIntensity: 0.5
+                        emissiveIntensity: 0.5,
+                        emissiveMap: texture
                     });
                 } else {
                     material = new this.THREE.MeshStandardMaterial({
@@ -172,7 +179,195 @@ class PlanetExplorer {
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
         this.controls.minDistance = 20;
-        this.controls.maxDistance = 300; // Increased for better view of all planets
+        this.controls.maxDistance = 300;
+        this.controls.maxPolarAngle = Math.PI / 1.5;
+        this.controls.minPolarAngle = Math.PI / 3;
+    }
+
+    setupPlanetClickInteraction() {
+        const renderer = this.renderer.domElement;
+        let startPosition = { x: 0, y: 0 };
+
+        renderer.addEventListener('mousedown', (event) => {
+            startPosition = { x: event.clientX, y: event.clientY };
+        });
+
+        renderer.addEventListener('mouseup', (event) => {
+            const moveDistance = Math.sqrt(
+                Math.pow(event.clientX - startPosition.x, 2) + 
+                Math.pow(event.clientY - startPosition.y, 2)
+            );
+            
+            if (moveDistance < 5) {
+                this.mouse.x = (event.offsetX / renderer.clientWidth) * 2 - 1;
+                this.mouse.y = -(event.offsetY / renderer.clientHeight) * 2 + 1;
+
+                this.raycaster.setFromCamera(this.mouse, this.camera);
+                const intersects = this.raycaster.intersectObjects(Object.values(this.planets), true);
+
+                if (intersects.length > 0) {
+                    const clickedPlanet = Object.entries(this.planets).find(([name, mesh]) => {
+                        return mesh === intersects[0].object || mesh.children.includes(intersects[0].object);
+                    });
+
+                    if (clickedPlanet) {
+                        const planetName = clickedPlanet[0];
+                        
+                        document.querySelectorAll('.cosmic-btn[data-planet]').forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.dataset.planet === planetName) {
+                                btn.classList.add('active');
+                            }
+                        });
+
+                        this.focusOnPlanet(planetName);
+                        this.loadPlanetData(planetName);
+                    }
+                }
+            }
+        });
+
+        renderer.addEventListener('touchstart', (event) => {
+            event.preventDefault();
+            startPosition = { 
+                x: event.touches[0].clientX, 
+                y: event.touches[0].clientY 
+            };
+        });
+
+        renderer.addEventListener('touchend', (event) => {
+            event.preventDefault();
+            if (event.changedTouches.length === 0) return;
+            
+            const touch = event.changedTouches[0];
+            const moveDistance = Math.sqrt(
+                Math.pow(touch.clientX - startPosition.x, 2) + 
+                Math.pow(touch.clientY - startPosition.y, 2)
+            );
+
+            if (moveDistance < 5) {
+                this.mouse.x = (touch.clientX / renderer.clientWidth) * 2 - 1;
+                this.mouse.y = -(touch.clientY / renderer.clientHeight) * 2 + 1;
+
+                this.raycaster.setFromCamera(this.mouse, this.camera);
+                const intersects = this.raycaster.intersectObjects(Object.values(this.planets), true);
+
+                if (intersects.length > 0) {
+                    const clickedPlanet = Object.entries(this.planets).find(([name, mesh]) => {
+                        return mesh === intersects[0].object || mesh.children.includes(intersects[0].object);
+                    });
+
+                    if (clickedPlanet) {
+                        const planetName = clickedPlanet[0];
+                        document.querySelectorAll('.cosmic-btn[data-planet]').forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.dataset.planet === planetName) {
+                                btn.classList.add('active');
+                            }
+                        });
+
+                        this.focusOnPlanet(planetName);
+                        this.loadPlanetData(planetName);
+                    }
+                }
+            }
+        });
+    }
+
+    setupInteraction() {
+        const renderer = this.renderer.domElement;
+
+        renderer.addEventListener('mousedown', (e) => {
+            this.isDragging = true;
+            this.previousMousePosition = {
+                x: e.offsetX,
+                y: e.offsetY
+            };
+            this.controls.enabled = false;
+        });
+        renderer.addEventListener('mousemove', (e) => {
+            if (!this.isDragging) return;
+
+            const deltaMove = {
+                x: e.offsetX - this.previousMousePosition.x,
+                y: e.offsetY - this.previousMousePosition.y
+            };
+
+            const activePlanetButton = document.querySelector('.cosmic-btn[data-planet].active');
+            if (activePlanetButton) {
+                const planetName = activePlanetButton.dataset.planet;
+                const planet = this.planets[planetName];
+                if (planet) {
+                    const wasAutoRotating = this.isAutoRotating;
+                    this.isAutoRotating = false;
+
+                    planet.rotation.y += deltaMove.x * 0.005;
+                    planet.rotation.x += deltaMove.y * 0.005;
+
+                    this.isAutoRotating = wasAutoRotating;
+                }
+            }
+
+            this.previousMousePosition = {
+                x: e.offsetX,
+                y: e.offsetY
+            };
+        });
+
+        renderer.addEventListener('mouseup', () => {
+            this.isDragging = false;
+            this.controls.enabled = true;
+        });
+
+        renderer.addEventListener('mouseleave', () => {
+            this.isDragging = false;
+            this.controls.enabled = true;
+        });
+
+        renderer.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.isDragging = true;
+            this.previousMousePosition = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY
+            };
+            this.controls.enabled = false;
+        });
+
+        renderer.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!this.isDragging) return;
+
+            const deltaMove = {
+                x: e.touches[0].clientX - this.previousMousePosition.x,
+                y: e.touches[0].clientY - this.previousMousePosition.y
+            };
+
+            const activePlanetButton = document.querySelector('.cosmic-btn[data-planet].active');
+            if (activePlanetButton) {
+                const planetName = activePlanetButton.dataset.planet;
+                const planet = this.planets[planetName];
+                if (planet) {
+                    const wasAutoRotating = this.isAutoRotating;
+                    this.isAutoRotating = false;
+
+                    planet.rotation.y += deltaMove.x * 0.005;
+                    planet.rotation.x += deltaMove.y * 0.005;
+
+                    this.isAutoRotating = wasAutoRotating;
+                }
+            }
+
+            this.previousMousePosition = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY
+            };
+        });
+
+        renderer.addEventListener('touchend', () => {
+            this.isDragging = false;
+            this.controls.enabled = true;
+        });
     }
 
     addEventListeners() {
@@ -196,29 +391,34 @@ class PlanetExplorer {
         });
 
         const autoRotateBtn = document.getElementById('auto-rotate');
-        autoRotateBtn.addEventListener('click', () => {
-            this.isAutoRotating = !this.isAutoRotating;
-            autoRotateBtn.innerHTML = this.isAutoRotating ? 
-                '<span class="btn-icon">🔄</span><span class="btn-text">Stop Rotation</span>' : 
-                '<span class="btn-icon">🔄</span><span class="btn-text">Auto Rotate</span>';
-        });
+        if (autoRotateBtn) {
+            autoRotateBtn.addEventListener('click', () => {
+                this.isAutoRotating = !this.isAutoRotating;
+                autoRotateBtn.innerHTML = this.isAutoRotating ? 
+                    '<span class="btn-icon">🔄</span><span class="btn-text">Stop Rotation</span>' : 
+                    '<span class="btn-icon">🔄</span><span class="btn-text">Auto Rotate</span>';
+            });
+        }
 
-        document.getElementById('reset-view').addEventListener('click', () => {
-            gsap.to(this.camera.position, {
-                duration: 1,
-                x: 0,
-                y: 50,
-                z: 150,
-                ease: 'power2.inOut'
+        const resetBtn = document.getElementById('reset-view');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                gsap.to(this.camera.position, {
+                    duration: 1,
+                    x: 0,
+                    y: 30,
+                    z: 200,
+                    ease: 'power2.inOut'
+                });
+                gsap.to(this.controls.target, {
+                    duration: 1,
+                    x: 0,
+                    y: 0,
+                    z: 0,
+                    ease: 'power2.inOut'
+                });
             });
-            gsap.to(this.controls.target, {
-                duration: 1,
-                x: 0,
-                y: 0,
-                z: 0,
-                ease: 'power2.inOut'
-            });
-        });
+        }
     }
 
     focusOnPlanet(planetName) {
@@ -259,9 +459,10 @@ class PlanetExplorer {
             
             const rows = [
                 ['Type', planetData.type],
-                ['Radius', planetData.physicalCharacteristics.radius],
+                ['Diameter', planetData.physicalCharacteristics.diameter],
                 ['Mass', planetData.physicalCharacteristics.mass],
                 ['Gravity', planetData.physicalCharacteristics.gravity],
+                ['Rotation', planetData.physicalCharacteristics.rotation],
                 ['Temperature', this.getTemperatureDisplay(planetData.physicalCharacteristics.temperature)]
             ];
 
@@ -282,34 +483,48 @@ class PlanetExplorer {
                 </tbody>
             `;
 
-            // Update NASA insights content
             nasaContent.innerHTML = planetData.interesting_fact ? 
                 `<p class="nasa-fact">${planetData.interesting_fact}</p>` :
                 '<div class="loading-animation">No additional data available</div>';
 
         } catch (error) {
             console.error('Error loading planet data:', error);
+            const infoPanel = document.querySelector('.info-panel');
+            if (infoPanel) {
+                infoPanel.innerHTML = `
+                    <div class="error-message">
+                        <h3>Error Loading Data</h3>
+                        <p>Unable to load planet information. Please try again later.</p>
+                    </div>
+                `;
+            }
         }
     }
 
     getTemperatureDisplay(temp) {
+        if (!temp) return 'Not available';
         if (temp.mean) return temp.mean;
         if (temp.surface) return temp.surface;
         if (temp.cloud_top) return temp.cloud_top;
-        if (temp.average) return temp.average;
-        return `${temp.min} to ${temp.max}`;
+        if (temp.min && temp.max) return `${temp.min} to ${temp.max}`;
+        return 'Not available';
     }
 
     animate() {
         requestAnimationFrame(() => this.animate());
 
-        if (this.isAutoRotating) {
+        if (this.isAutoRotating && !this.isDragging) {
             Object.values(this.planets).forEach(planet => {
-                if (planet) planet.rotation.y += 0.005;
+                if (planet) {
+                    planet.rotation.y += 0.005;
+                }
             });
         }
 
-        this.controls.update();
+        if (this.controls) {
+            this.controls.update();
+        }
+
         this.renderer.render(this.scene, this.camera);
     }
 }

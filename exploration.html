@@ -45,7 +45,7 @@
         </div>
 
         <div class="planet-controls">
-            <fieldset class="planet-selector">
+            <fieldset class="planet-selector" id="planet-selection">
                 <legend>Planet Selection Controls</legend>
                 <button class="cosmic-btn" data-planet="sun">Sun</button>
                 <button class="cosmic-btn" data-planet="mercury">Mercury</button>
@@ -58,7 +58,7 @@
                 <button class="cosmic-btn" data-planet="neptune">Neptune</button>
                 <button class="cosmic-btn" data-planet="pluto">Pluto</button>
             </fieldset>
-            <fieldset class="view-controls">
+            <fieldset class="view-controls" id="view-controls">
                 <legend>View Controls</legend>
                 <button class="cosmic-btn control-btn" id="auto-rotate">
                     <span class="btn-icon" aria-hidden="true">🔄</span>
@@ -99,31 +99,15 @@
         </div>
     </main>
 
+    <div class="spacer-divider"></div>
     <footer class="glass-panel">
         <div class="footer-content">
             <div class="footer-section">
-                <h3>Space Explorer</h3>
-                <p>Exploring the cosmos, one discovery at a time.</p>
+                <p><strong>Exploring the cosmos,</strong> one discovery at a time.</p>
             </div>
-            <div class="footer-section">
-                <h3>Navigation</h3>
-                <ul>
-                    <li><a href="index.html#events">Space Events</a></li>
-                    <li><a href="exploration.html">Exploration</a></li>
-                    <li><a href="index.html#missions">Missions</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2024 Space Explorer. All rights reserved.</p>
             </div>
-            <div class="footer-section">
-                <h3>Connect</h3>
-                <div class="social-links">
-                    <a href="#" aria-label="GitHub"><i class="fab fa-github" aria-hidden="true"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 Space Explorer. All rights reserved.</p>
         </div>
     </footer>
 
