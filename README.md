@@ -1,5 +1,7 @@
 Space Explorer
 An interactive 3D solar system explorer that allows users to learn about and interact with planets in our solar system.
+Live Demo
+Visit the live application: Space Explorer
 Features
 
 Interactive 3D visualization of the solar system
@@ -22,6 +24,7 @@ GSAP for animations
 HTML5 and CSS3 with glass-morphism effects
 JavaScript ES6+
 Responsive design for all device sizes
+Vite for building and bundling
 
 Getting Started
 
@@ -33,9 +36,13 @@ Navigate to the project directory:
 
 bashCopycd SpaceExplorer
 
-Open index.html in your browser to view the homepage
-Click "Exploration" to enter the interactive solar system viewer
+Install dependencies:
 
+bashCopynpm install
+
+Run the development server:
+
+bashCopynpm run dev
 Usage
 
 Use the planet selection buttons to focus on different planets
@@ -45,8 +52,6 @@ Toggle auto-rotation with the rotation button
 Reset the view at any time with the reset button
 View detailed information in the info panel below the viewer
 
-Contributing
-Currently, this project is being actively developed. Please check back for contribution guidelines.
 Acknowledgments
 
 Planet textures and data courtesy of NASA
