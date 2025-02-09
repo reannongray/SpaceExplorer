@@ -24,6 +24,12 @@ export default defineConfig({
     }
   },
   build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        exploration: resolve(__dirname, 'exploration.html')
+      }
+    },
     outDir: 'dist',
     assetsDir: 'assets'
   },
