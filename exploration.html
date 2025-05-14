@@ -59,17 +59,22 @@
                 <button class="cosmic-btn" data-planet="pluto">Pluto</button>
             </fieldset>
             <fieldset class="view-controls" id="view-controls">
-                <legend>View Controls</legend>
-                <button class="cosmic-btn control-btn" id="auto-rotate">
-                    <span class="btn-icon" aria-hidden="true">🔄</span>
-                    <span class="btn-text">Auto Rotate</span>
-                </button>
-                <button class="cosmic-btn control-btn" id="reset-view">
-                    <span class="btn-icon" aria-hidden="true">⟲</span>
-                    <span class="btn-text">Reset View</span>
-                </button>
-            </fieldset>
+    <legend>View Controls</legend>
+    <button class="cosmic-btn control-btn" id="auto-rotate">
+        <span class="btn-icon" aria-hidden="true">🔄</span>
+        <span class="btn-text">Auto Rotate</span>
+    </button>
+    <button class="cosmic-btn control-btn" id="reset-view">
+        <span class="btn-icon" aria-hidden="true">⟲</span>
+        <span class="btn-text">Reset View</span>
+    </button>
+    <button class="cosmic-btn moon-btn disabled" id="view-moons" disabled>
+        <span class="btn-icon" aria-hidden="true">🌙</span>
+        <span class="btn-text">View Moons</span>
+    </button>
+</fieldset>
         </div>
+
 
         <div class="info-panel">
             <div class="info-content">
@@ -97,7 +102,41 @@
                 </div>
             </div>
         </div>
-    </main>
+
+    <!-- Moon Popup -->
+    <div id="moon-popup" class="moon-popup" style="display: none;">
+    <div class="moon-popup-content glass-effect">
+        <div class="moon-popup-header">
+            <h2 class="moon-popup-title glow">Moons of <span id="moon-planet-name"></span></h2>
+            <button class="moon-popup-close cosmic-btn">
+                <span aria-hidden="true">×</span>
+                <span class="visually-hidden">Close</span>
+            </button>
+        </div>
+        <div class="moon-selector" id="moon-selector">
+            <!-- Moon selection buttons will be dynamically populated -->
+        </div>
+        <div class="moon-info-container">
+            <div class="moon-3d-container">
+                <canvas id="moon-canvas" aria-label="3D Moon View"></canvas>
+            </div>
+            <h3 class="moon-name glow" id="selected-moon-name"></h3>
+            <div class="moon-info-grid">
+                <div class="moon-basic-info">
+                    <table class="data-table" id="moon-data-table">
+                        <!-- Moon data will be dynamically populated -->
+                    </table>
+                </div>
+                <div class="moon-detail-info">
+                    <h3 class="glow">Details</h3>
+                    <div class="nasa-content" id="moon-details">
+                        <!-- Moon details will be dynamically populated -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     <div class="spacer-divider"></div>
     <footer class="glass-panel">
