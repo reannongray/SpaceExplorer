@@ -670,3 +670,243 @@ legend {
         margin: 2cm;
     }
 }
+
+/*Moons*/
+
+/* Moon Button */
+.moon-button-container {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.moon-btn {
+    background: linear-gradient(45deg, 
+        rgba(58, 31, 93, 0.6), 
+        rgba(0, 212, 255, 0.6)
+    );
+    transition: all 0.3s ease;
+}
+
+.moon-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px rgba(255, 97, 216, 0.5);
+}
+
+/* Moon Selector - for buttons in the moon info view */
+.moon-selector .cosmic-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    margin: 0.25rem;
+}
+
+.moon-selector .cosmic-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Moon Popup */
+.moon-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 10, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+    backdrop-filter: blur(3px);
+    animation: fadeIn 0.3s ease-out;
+    overflow: auto;
+    padding: 2rem;
+}
+
+.moon-popup-content {
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: rgba(19, 18, 58, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+    animation: fadeIn 0.4s ease-out;
+}
+
+.moon-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 1rem;
+}
+
+.moon-popup-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    color: var(--stellar-blue);
+    margin: 0;
+}
+
+.moon-popup-close {
+    background: none;
+    border: none;
+    color: var(--star-white);
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.moon-popup-close:hover {
+    background: rgba(255, 97, 216, 0.2);
+    transform: rotate(90deg);
+}
+
+.moon-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.moon-info-container {
+    padding: 0 1rem;
+}
+
+.moon-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    color: var(--stellar-blue);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.moon-info-grid {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    gap: 2rem;
+}
+
+.moon-detail-info {
+    background: rgba(19, 18, 58, 0.3);
+    padding: 1.25rem;
+    border-radius: 15px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.moon-detail-info h3 {
+    color: var(--stellar-blue);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.0rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Responsive adjustments for moon popup */
+@media (max-width: 768px) {
+    .moon-popup-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    
+    .moon-info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .moon-popup-title {
+        font-size: 1.2rem;
+    }
+    
+    .moon-name {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .moon-popup {
+        padding: 1rem;
+    }
+    
+    .moon-popup-content {
+        padding: 1rem;
+        width: 100%;
+    }
+    
+    .moon-selector {
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    .moon-selector .cosmic-btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
+}
+.moon-3d-container {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 1.5rem auto;
+    position: relative;
+    background: rgba(19, 18, 58, 0.4);
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+    border: 1px solid var(--glass-border);
+}
+
+#moon-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .moon-3d-container {
+        width: 150px;
+        height: 150px;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .moon-3d-container {
+        width: 120px;
+        height: 120px;
+    }
+}
+.moon-3d-container {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 1.5rem auto;
+    position: relative;
+    background: rgba(19, 18, 58, 0.4);
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#moon-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
